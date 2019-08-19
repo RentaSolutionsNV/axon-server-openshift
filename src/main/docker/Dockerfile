@@ -40,9 +40,9 @@ COPY ["AXONIQ OPEN SOURCE LICENSE.txt", "${AXONSERVER_HOME}/AXONIQ OPEN SOURCE L
 COPY ["APACHE LICENSE v2.0.txt", "${AXONSERVER_HOME}/APACHE LICENSE v2.0.txt"]
 
 RUN chmod 755 ${AXONSERVER_HOME}/startup.sh \
-    && chgrp -R 0 ${AXONSERVER_HOME} \
     && touch ${AXONSERVER_HOME}/AxonIQ.pid \
-    && chmod g+w ${AXONSERVER_HOME}/axonserver.properties ${AXONSERVER_HOME}/AxonIQ.pid \
+    && chmod g+w ${AXONSERVER_HOME}/axonserver.properties ${AXONSERVER_HOME}/AxonIQ.pid ${AXONSERVER_HOME}/axonserver-4.2/ \
+    && chgrp -R 0 ${AXONSERVER_HOME} \
     && yum -y remove unzip wget \
     && yum clean all
 
