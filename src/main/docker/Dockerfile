@@ -13,6 +13,14 @@
 # limitations under the License.
 FROM openjdk:8-jdk
 
+LABEL maintainer="Fabian Dammekens <fabian.dammekens@cegeka.com>"
+
+# TODO: Set labels used in OpenShift to describe the builder image
+LABEL io.k8s.description="Zero-configuration message router and event store for Axon" \
+      io.k8s.display-name="axon-server-openshift" \
+      io.openshift.expose-services="8024:http,8124:http" \
+      io.openshift.tags="axon,server"
+
 ENV AXONSERVER_HOME /opt/axonserver
 RUN mkdir -p ${AXONSERVER_HOME}/data
 
@@ -22,7 +30,10 @@ COPY axonserver-cli.jar ${AXONSERVER_HOME}/axonserver-cli.jar
 COPY startup.sh ${AXONSERVER_HOME}/startup.sh
 COPY ["AXONIQ OPEN SOURCE LICENSE.txt", "${AXONSERVER_HOME}/AXONIQ OPEN SOURCE LICENSE.txt"]
 COPY ["APACHE LICENSE v2.0.txt", "${AXONSERVER_HOME}/APACHE LICENSE v2.0.txt"]
-RUN chmod 755 ${AXONSERVER_HOME}/startup.sh
+RUN chmod 755 ${AXONSERVER_HOME}/startup.sh \
+    && chgrp -R 0 ${AXONSERVER_HOME} \
+    && touch ${AXONSERVER_HOME}/AxonIQ.pid
+    && chmod g+w ${AXONSERVER_HOME}/axonserver.properties ${AXONSERVER_HOME}/AxonIQ.pid
 
 EXPOSE 8024
 EXPOSE 8124
