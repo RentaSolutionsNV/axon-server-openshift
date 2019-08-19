@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM openjdk:8-jdk
+FROM registry.access.redhat.com/openjdk/openjdk-11-rhel7
 
 LABEL maintainer="Fabian Dammekens <fabian.dammekens@cegeka.com>"
 
@@ -21,19 +21,29 @@ LABEL io.k8s.description="Zero-configuration message router and event store for 
       io.openshift.expose-services="8024:http,8124:http" \
       io.openshift.tags="axon,server"
 
+USER root
+
 ENV AXONSERVER_HOME /opt/axonserver
 RUN mkdir -p ${AXONSERVER_HOME}/data
 
-COPY axonserver.jar ${AXONSERVER_HOME}/axonserver.jar
-COPY axonserver.properties ${AXONSERVER_HOME}/axonserver.properties
-COPY axonserver-cli.jar ${AXONSERVER_HOME}/axonserver-cli.jar
+RUN yum -y install unzip \
+    && wget -q https://download.axoniq.io/axonserver/AxonServer-4.2.zip \
+    && unzip AxonServer-4.2.zip axonserver-4.2/axonserver.jar \
+    && ln -s ${AXONSERVER_HOME}/axonserver-4.2/axonserver.jar ${AXONSERVER_HOME}/axonserver.jar
+
+# COPY axonserver.jar ${AXONSERVER_HOME}/axonserver.jar
+# COPY axonserver-cli.jar ${AXONSERVER_HOME}/axonserver-cli.jar
+COPY ../resources/axonserver.properties ${AXONSERVER_HOME}/axonserver.properties
 COPY startup.sh ${AXONSERVER_HOME}/startup.sh
 COPY ["AXONIQ OPEN SOURCE LICENSE.txt", "${AXONSERVER_HOME}/AXONIQ OPEN SOURCE LICENSE.txt"]
 COPY ["APACHE LICENSE v2.0.txt", "${AXONSERVER_HOME}/APACHE LICENSE v2.0.txt"]
+
 RUN chmod 755 ${AXONSERVER_HOME}/startup.sh \
     && chgrp -R 0 ${AXONSERVER_HOME} \
     && touch ${AXONSERVER_HOME}/AxonIQ.pid \
     && chmod g+w ${AXONSERVER_HOME}/axonserver.properties ${AXONSERVER_HOME}/AxonIQ.pid
+
+USER 1001
 
 EXPOSE 8024
 EXPOSE 8124

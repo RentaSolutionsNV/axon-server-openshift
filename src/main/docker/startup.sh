@@ -63,7 +63,7 @@ fi
 
 # - JAVA_OPTS
 if [ "x${JAVA_OPTS}" = "x" ] ; then
-  export JAVA_OPTS=-Xmx512m
+  export JAVA_OPTS=-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
 fi
 
 java -Djava.security.egd=file:/dev/./urandom ${JAVA_OPTS} -jar ${AXONSERVER_HOME}/axonserver.jar
