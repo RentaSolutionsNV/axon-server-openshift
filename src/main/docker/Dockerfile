@@ -42,9 +42,9 @@ COPY ["APACHE LICENSE v2.0.txt", "${AXONSERVER_HOME}/APACHE LICENSE v2.0.txt"]
 RUN chmod 755 ${AXONSERVER_HOME}/startup.sh \
     && chgrp -R 0 ${AXONSERVER_HOME} \
     && touch ${AXONSERVER_HOME}/AxonIQ.pid \
-    && chmod g+w ${AXONSERVER_HOME}/axonserver.properties ${AXONSERVER_HOME}/AxonIQ.pid
-
-RUN yum -y remove unzip wget && yum clean all
+    && chmod g+w ${AXONSERVER_HOME}/axonserver.properties ${AXONSERVER_HOME}/AxonIQ.pid \
+    && yum -y remove unzip wget \
+    && yum clean all
 
 USER 1001
 
