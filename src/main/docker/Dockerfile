@@ -27,7 +27,7 @@ ENV AXONSERVER_HOME /opt/axonserver
 RUN mkdir -p ${AXONSERVER_HOME}/data
 
 RUN yum -y install unzip wget \
-    && cd ${AXONSERVER_HOME}
+    && cd ${AXONSERVER_HOME} \
     && wget -q https://download.axoniq.io/axonserver/AxonServer-4.2.zip \
     && unzip AxonServer-4.2.zip axonserver-4.2/axonserver.jar \
     && ln -s ${AXONSERVER_HOME}/axonserver-4.2/axonserver.jar ${AXONSERVER_HOME}/axonserver.jar
