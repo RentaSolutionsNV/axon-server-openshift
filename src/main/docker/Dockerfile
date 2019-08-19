@@ -33,8 +33,9 @@ RUN yum -y install unzip wget \
 
 # COPY axonserver.jar ${AXONSERVER_HOME}/axonserver.jar
 # COPY axonserver-cli.jar ${AXONSERVER_HOME}/axonserver-cli.jar
-COPY ../resources/axonserver.properties ${AXONSERVER_HOME}/axonserver.properties
+COPY axonserver.properties ${AXONSERVER_HOME}/axonserver.properties
 COPY startup.sh ${AXONSERVER_HOME}/startup.sh
+
 COPY ["AXONIQ OPEN SOURCE LICENSE.txt", "${AXONSERVER_HOME}/AXONIQ OPEN SOURCE LICENSE.txt"]
 COPY ["APACHE LICENSE v2.0.txt", "${AXONSERVER_HOME}/APACHE LICENSE v2.0.txt"]
 
