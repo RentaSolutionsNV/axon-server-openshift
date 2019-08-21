@@ -17,7 +17,7 @@
 export AXONSERVER_HOME=/opt/axonserver
 cd ${AXONSERVER_HOME}
 
-echo >> ${AXONSERVER_HOME}/axonserver.properties
+# echo >> ${AXONSERVER_HOME}/axonserver.properties
 
 # can be provided through Docker/Kubernetes:
 # - AXONSERVER_NAME
@@ -63,7 +63,7 @@ fi
 
 # - JAVA_OPTS
 if [ "x${JAVA_OPTS}" = "x" ] ; then
-  export JAVA_OPTS=-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+  export JAVA_OPTS='-XX:+UseContainerSupport'
 fi
 
 java -Djava.security.egd=file:/dev/./urandom ${JAVA_OPTS} -jar ${AXONSERVER_HOME}/axonserver.jar

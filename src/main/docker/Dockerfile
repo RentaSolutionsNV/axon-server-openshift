@@ -16,7 +16,8 @@ FROM registry.access.redhat.com/openjdk/openjdk-11-rhel7
 LABEL maintainer="Fabian Dammekens <fabian.dammekens@cegeka.com>"
 
 # TODO: Set labels used in OpenShift to describe the builder image
-LABEL io.k8s.description="Zero-configuration message router and event store for Axon" \
+LABEL io.axoniq.server.version="4.2"
+      io.k8s.description="Zero-configuration message router and event store for Axon" \
       io.k8s.display-name="axon-server-openshift" \
       io.openshift.expose-services="8024:http,8124:http" \
       io.openshift.tags="axon,server"
@@ -29,9 +30,9 @@ RUN mkdir -p ${AXONSERVER_HOME}/data
 RUN yum -y install unzip wget \
     && cd ${AXONSERVER_HOME} \
     && wget -q https://download.axoniq.io/axonserver/AxonServer-4.2.zip \
-    && unzip AxonServer-4.2.zip axonserver-4.2/axonserver.jar \
-    && ln -s ${AXONSERVER_HOME}/axonserver-4.2/axonserver.jar ${AXONSERVER_HOME}/axonserver.jar \
-    && rm ${AXONSERVER_HOME}/AxonServer-4.2.zip
+    && unzip AxonServer-4.2.zip axonserver-4.2/axonserver.jar axonserver-4.2/axonserver-cli.jar \
+    && mv ${AXONSERVER_HOME}/axonserver-4.2/*.jar .
+    && rm -rf ${AXONSERVER_HOME}/axonserver-4.2/ ${AXONSERVER_HOME}/AxonServer-4.2.zip
 
 COPY src/main/docker/axonserver.properties ${AXONSERVER_HOME}/axonserver.properties
 COPY src/main/docker/startup.sh ${AXONSERVER_HOME}/startup.sh
@@ -40,9 +41,8 @@ COPY ["AXONIQ OPEN SOURCE LICENSE.txt", "${AXONSERVER_HOME}/AXONIQ OPEN SOURCE L
 COPY ["APACHE LICENSE v2.0.txt", "${AXONSERVER_HOME}/APACHE LICENSE v2.0.txt"]
 
 RUN chmod 755 ${AXONSERVER_HOME}/startup.sh \
-    && touch ${AXONSERVER_HOME}/AxonIQ.pid \
-    && chmod g+w ${AXONSERVER_HOME}/ ${AXONSERVER_HOME}/axonserver.properties ${AXONSERVER_HOME}/AxonIQ.pid ${AXONSERVER_HOME}/axonserver-4.2/ \
-    && chgrp -R 0 ${AXONSERVER_HOME} \
+    && chmod g+w ${AXONSERVER_HOME}/ ${AXONSERVER_HOME}/axonserver.properties \
+    && chgrp -R 0 ${AXONSERVER_HOME}/ \
     && yum -y remove unzip wget \
     && yum clean all
 
