@@ -16,7 +16,7 @@ FROM registry.access.redhat.com/openjdk/openjdk-11-rhel7
 LABEL maintainer="Fabian Dammekens <fabian.dammekens@cegeka.com>"
 
 # TODO: Set labels used in OpenShift to describe the builder image
-LABEL io.axoniq.server.version="4.2"
+LABEL io.axoniq.server.version="4.2" \
       io.k8s.description="Zero-configuration message router and event store for Axon" \
       io.k8s.display-name="axon-server-openshift" \
       io.openshift.expose-services="8024:http,8124:http" \
