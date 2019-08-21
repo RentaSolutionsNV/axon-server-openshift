@@ -31,7 +31,7 @@ RUN yum -y install unzip wget \
     && cd ${AXONSERVER_HOME} \
     && wget -q https://download.axoniq.io/axonserver/AxonServer-4.2.zip \
     && unzip AxonServer-4.2.zip axonserver-4.2/axonserver.jar axonserver-4.2/axonserver-cli.jar \
-    && mv ${AXONSERVER_HOME}/axonserver-4.2/*.jar .
+    && mv ${AXONSERVER_HOME}/axonserver-4.2/*.jar . \
     && rm -rf ${AXONSERVER_HOME}/axonserver-4.2/ ${AXONSERVER_HOME}/AxonServer-4.2.zip
 
 COPY src/main/docker/axonserver.properties ${AXONSERVER_HOME}/axonserver.properties
