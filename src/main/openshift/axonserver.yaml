@@ -1,0 +1,231 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: axonserver
+message: |-
+  The following components(s) have been created in your project: ${NAME}.
+
+  For more information about using this template, including OpenShift considerations,
+  see https://github.com/cegeka/axon-server-openshift/blob/master/src/main/openshift/README.md
+metadata:
+  annotations:
+    description: Axon Server has been developed fully in Java, building on Spring Boot.
+      It is distributed as a single jar file containing all libraries used through shading. For more information about using this template,
+      including OpenShift considerations, see https://github.com/cegeka/axon-server-openshift/blob/master/src/main/openshift/README.md
+    iconClass: icon-openjdk
+    openshift.io/display-name: Axonserver
+    openshift.io/documentation-url: https://docs.axoniq.io/reference-guide/axon-server
+    openshift.io/long-description: This template defines resources needed to run
+      axonserver
+    openshift.io/provider-display-name: Axon
+    openshift.io/support-url: https://axoniq.io/product-overview/axon-server
+    tags: quickstart,php,cegeka,axon
+  creationTimestamp: 2019-08-22T13:28:54Z
+  name: axonserver
+objects:
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${NAME}-gui
+    labels:
+      app: ${NAME}
+  spec:
+    ports:
+    - name: gui
+      port: 8024
+      targetPort: 8024
+    selector:
+      app: ${NAME}
+    type: LoadBalancer
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${NAME}
+    labels:
+      app: ${NAME}
+  spec:
+    ports:
+    - name: grpc
+      port: 8124
+      targetPort: 8124
+    clusterIP: None
+    selector:
+      app: ${NAME}
+
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      template.openshift.io/expose-uri: https://{.spec.host}{.spec.path}
+    labels:
+      app: ${NAME}
+    name: ${NAME}
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    tls:
+      insecureEdgeTerminationPolicy: Allow
+      termination: edge
+    port:
+      targetPort: gui
+    to:
+      kind: Service
+      name: ${NAME}-gui
+    wildcardPolicy: None
+
+
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the application image
+    labels:
+      app: ${NAME}
+    name: ${NAME}
+
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      description: Defines how to build the application
+      template.alpha.openshift.io/wait-for-ready: "true"
+    labels:
+      app: ${NAME}
+    name: ${NAME}-image
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}:latest
+    source:
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      dockerStrategy:
+        dockerfilePath: src/main/docker/Dockerfile
+        from:
+          kind: DockerImage
+          name: ${SOURCE_IMAGE_REF}
+      type: Docker
+
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ${NAME}
+    name: ${NAME}
+  spec:
+    replicas: 1
+    selector:
+      app: ${NAME}
+      deploymentconfig: ${NAME}
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${NAME}
+          deploymentconfig: ${NAME}
+      spec:
+        containers:
+        - name: ${NAME}
+          image: ${NAME}-openshift
+          imagePullPolicy: IfNotPresent
+          ports:
+          - name: grpc
+            containerPort: 8124
+            protocol: TCP
+          - name: gui
+            containerPort: 8024
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              port: 8024
+              path: /actuator/health
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "${CPU_LIMIT}"
+              memory: "${MEMORY_LIMIT}"
+            requests:
+              cpu: 200m
+              memory: 64Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /opt/axonserver/data
+              name: data
+            - mountPath: /opt/axonserver/logs
+              name: logs
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+          - emptyDir: {}
+            name: data
+          - emptyDir: {}
+            name: logs
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}:latest
+      type: ImageChange
+    - type: ConfigChange
+
+parameters:
+- description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  name: NAME
+  required: true
+  value: "axonserver"
+- description: Maximum amount of CPU cores the container can use.
+  displayName: CPU Limit
+  name: CPU_LIMIT
+  required: true
+  value: "1"
+- description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: "512Mi"
+- description: The exposed hostname that will route to the nginx service, if left
+    blank a value will be defaulted.
+  displayName: Application Hostname
+  name: APPLICATION_DOMAIN
+- description: The URL of the repository with your application source code.
+  displayName: Git Repository URL
+  name: SOURCE_REPOSITORY_URL
+  required: true
+  value: "https://github.com/cegeka/axon-server-openshift.git"
+- description: Set this to a branch name, tag or other ref of your repository if you
+    are not using the default branch.
+  displayName: Git Reference
+  name: SOURCE_REPOSITORY_REF
+  value: "master"
+- description: Set this to a source image to build the axonserver image
+  displayName: Image Reference
+  name: SOURCE_IMAGE_REF
+  required: true
+  value: "registry.access.redhat.com/openjdk/openjdk-11-rhel7"
