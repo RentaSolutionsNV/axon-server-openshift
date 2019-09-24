@@ -38,7 +38,7 @@ COPY src/main/docker/axonserver.properties ${AXONSERVER_HOME}/axonserver.propert
 COPY src/main/docker/startup.sh ${AXONSERVER_HOME}/startup.sh
 
 COPY ["AXONIQ OPEN SOURCE LICENSE.txt", "${AXONSERVER_HOME}/AXONIQ OPEN SOURCE LICENSE.txt"]
-COPY ["APACHE LICENSE v2.0.txt", "${AXONSERVER_HOME}/APACHE LICENSE v2.0.txt"]
+COPY ["LICENSE", "${AXONSERVER_HOME}/APACHE LICENSE v2.0.txt"]
 
 RUN chmod 755 ${AXONSERVER_HOME}/startup.sh \
     && chmod g+w ${AXONSERVER_HOME}/ ${AXONSERVER_HOME}/axonserver.properties \
