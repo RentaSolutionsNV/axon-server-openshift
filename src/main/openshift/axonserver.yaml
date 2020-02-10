@@ -6,12 +6,12 @@ message: |-
   The following components(s) have been created in your project: ${NAME}.
 
   For more information about using this template, including OpenShift considerations,
-  see https://github.com/cegeka/axon-server-openshift/blob/master/src/main/openshift/README.md
+  see https://github.com/RentaSolutionsNV/axon-server-openshift/blob/master/src/main/openshift/README.md
 metadata:
   annotations:
     description: Axon Server has been developed fully in Java, building on Spring Boot.
       It is distributed as a single jar file containing all libraries used through shading. For more information about using this template,
-      including OpenShift considerations, see https://github.com/cegeka/axon-server-openshift/blob/master/src/main/openshift/README.md
+      including OpenShift considerations, see https://github.com/RentaSolutionsNV/axon-server-openshift/blob/master/src/main/openshift/README.md
     iconClass: icon-openjdk
     openshift.io/display-name: Axonserver
     openshift.io/documentation-url: https://docs.axoniq.io/reference-guide/axon-server
@@ -19,7 +19,7 @@ metadata:
       axonserver
     openshift.io/provider-display-name: Axon
     openshift.io/support-url: https://axoniq.io/product-overview/axon-server
-    tags: quickstart,php,cegeka,axon
+    tags: quickstart,cegeka,axon
   creationTimestamp: 2019-08-22T13:28:54Z
   name: axonserver
 objects:
