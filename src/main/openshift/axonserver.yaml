@@ -102,6 +102,15 @@ objects:
       git:
         ref: ${SOURCE_REPOSITORY_REF}
         uri: ${SOURCE_REPOSITORY_URL}
+      images:
+        - from:
+            kind: DockerImage
+            name: docker.io/axoniq/axonserver:4.2.4
+          paths:
+            - destinationDir: .
+              sourcePath: /opt/axonserver/axonserver.jar
+            - destinationDir: .
+              sourcePath: /opt/axonserver/axonserver-cli.jar
       type: Git
     strategy:
       dockerStrategy:

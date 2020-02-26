@@ -27,13 +27,8 @@ USER root
 ENV AXONSERVER_HOME /opt/axonserver
 RUN mkdir -p ${AXONSERVER_HOME}/data
 
-RUN yum -y install unzip wget \
-    && cd ${AXONSERVER_HOME} \
-    && wget -q https://download.axoniq.io/axonserver/AxonServer.zip
-RUN cd ${AXONSERVER_HOME} && unzip AxonServer.zip axonserver-4.2.4/axonserver.jar axonserver-4.2.4/axonserver-cli.jar
-RUN cd ${AXONSERVER_HOME} && mv ${AXONSERVER_HOME}/axonserver-4.2.4/*.jar . \
-    && rm -rf ${AXONSERVER_HOME}/axonserver-4.2.4/ ${AXONSERVER_HOME}/AxonServer.zip
-
+COPY axonserver.jar ${AXONSERVER_HOME}/axonserver.jar
+COPY axonserver-cli.jar ${AXONSERVER_HOME}/axonserver-cli.jar
 COPY src/main/docker/axonserver.properties ${AXONSERVER_HOME}/axonserver.properties
 COPY src/main/docker/startup.sh ${AXONSERVER_HOME}/startup.sh
 
