@@ -30,7 +30,7 @@ RUN mkdir -p ${AXONSERVER_HOME}/data
 RUN yum -y install unzip wget \
     && cd ${AXONSERVER_HOME} \
     && wget -q https://download.axoniq.io/axonserver/AxonServer.zip
-RUN unzip AxonServer.zip axonserver-4.2.4/axonserver.jar axonserver-4.2.4/axonserver-cli.jar \
+RUN cd ${AXONSERVER_HOME} && unzip AxonServer.zip axonserver-4.2.4/axonserver.jar axonserver-4.2.4/axonserver-cli.jar \
     && mv ${AXONSERVER_HOME}/axonserver-4.2.4/*.jar . \
     && rm -rf ${AXONSERVER_HOME}/axonserver-4.2.4/ ${AXONSERVER_HOME}/AxonServer.zip
 
